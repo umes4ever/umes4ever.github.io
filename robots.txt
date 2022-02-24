@@ -1,4 +1,7 @@
-User-agent: *
+User-agent: Unnecessarybot
 Disallow: /
+
+User-agent: *
+Allow: /
 
 Sitemap: https://umes4ever.github.io/sitemap.xml
