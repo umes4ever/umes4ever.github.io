@@ -736,7 +736,6 @@ section::before {
 
 .about .content p:last-child {
   margin-bottom: 0;
-  color: var(--text-secondary);
   line-height: 1.8;
 }
 
@@ -1271,39 +1270,53 @@ section::before {
   }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #F5F5F7;
-    --text-secondary: #A1A1A6;
-    --glass-bg: rgba(0, 0, 0, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --background-primary: #000000;
-    --background-secondary: #1C1C1E;
-  }
-  
-  body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  }
+/* Dark theme support using .dark-theme class */
+body.dark-theme {
+  --text-primary: #F5F5F7;
+  --text-secondary: #A1A1A6;
+  --glass-bg: rgba(0, 0, 0, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --background-primary: #000000;
+  --background-secondary: #1C1C1E;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+  color: #F5F5F7 !important;
 }
 
-button:focus, button:active,
-.btn:focus, .btn:active,
-a[role='button']:focus, a[role='button']:active,
-.nav-menu a:focus, .nav-menu a:active,
-.mobile-nav-toggle:focus, .mobile-nav-toggle:active,
-.back-to-top:focus, .back-to-top:active,
-#hero .social-links a:focus, #hero .social-links a:active {
-  outline: none !important;
-  box-shadow: none !important;
+body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, body.dark-theme h4, body.dark-theme h5, body.dark-theme h6, body.dark-theme .section-title h2 {
+  color: #F5F5F7 !important;
 }
 
-/* Fix gap between hero and about section */
-#hero + section {
-  padding-top: 0 !important;
+body.dark-theme .section-title p, body.dark-theme .about .content p, body.dark-theme .resume .resume-item ul li, body.dark-theme .portfolio .portfolio-item ul li, body.dark-theme #footer p, body.dark-theme #footer .credits {
+  color: #A1A1A6 !important;
 }
 
-/* Add margin between project experience section and footer */
+body.dark-theme .nav-menu a,
+body.dark-theme #hero .social-links a,
+body.dark-theme .resume .resume-item,
+body.dark-theme .portfolio .portfolio-item,
+body.dark-theme .about .content,
+body.dark-theme #header,
+body.dark-theme .mobile-nav-toggle,
+body.dark-theme .back-to-top,
+body.dark-theme #footer .social-links a,
+body.dark-theme #footer,
+body.dark-theme section::before {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+}
+
+/* Remove any remaining dark backgrounds */
+
+/* Add gap between project experience section and footer */
 #portfolio {
   margin-bottom: 60px;
+}
+
+@media (max-width: 768px) {
+  #portfolio {
+    margin-bottom: 40px;
+  }
 }
