@@ -333,9 +333,16 @@
     let ticking = false;
 
     const updateParallax = () => {
+      // Only apply parallax on large screens
+      if (window.innerWidth < 992) {
+        heroSection.style.transform = '';
+        ticking = false;
+        return;
+      }
       const scrolled = window.pageYOffset;
-      const rate = scrolled * -0.3; // Reduced intensity for better performance
-      heroSection.style.transform = `translateY(${rate}px)`;
+      const rate = scrolled * -0.08; // Much less intense parallax
+      const maxTranslate = -100; // px, adjust as needed
+      heroSection.style.transform = `translateY(${Math.max(rate, maxTranslate)}px)`;
       ticking = false;
     };
 
@@ -347,6 +354,7 @@
     };
 
     window.addEventListener('scroll', requestTick, { passive: true });
+    window.addEventListener('resize', updateParallax); // Reset on resize
   }
 
   // Smooth reveal animations for sections

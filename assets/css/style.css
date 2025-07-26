@@ -654,7 +654,7 @@ section::before {
   border-radius: 30px;
   margin: 20px 35px 0 0;
   z-index: -1;
-  box-shadow: 0 8px 32px rgba(41, 151, 255, 0.10);
+  /* box-shadow: 0 8px 32px rgba(41, 151, 255, 0.10); */
 }
 
 /* Specific section::before for hero section only */
@@ -1296,4 +1296,14 @@ a[role='button']:focus, a[role='button']:active,
 #hero .social-links a:focus, #hero .social-links a:active {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* Fix gap between hero and about section */
+#hero + section {
+  padding-top: 0 !important;
+}
+
+/* Add margin between project experience section and footer */
+#portfolio {
+  margin-bottom: 60px;
 }
