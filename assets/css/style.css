@@ -1307,6 +1307,24 @@ body.dark-theme section::before {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
 }
+body.dark-theme #header {
+  background: rgba(10, 10, 20, 0.75) !important;
+  backdrop-filter: blur(36px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(180%) !important;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35) !important;
+}
+body.dark-theme #header::before {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 30, 40, 0.55) 0%,
+    rgba(30, 30, 40, 0.35) 50%,
+    rgba(30, 30, 40, 0.55) 100%
+  ) !important;
+  z-index: -1;
+  pointer-events: none;
+  content: '';
+}
 
 /* Remove any remaining dark backgrounds */
 
