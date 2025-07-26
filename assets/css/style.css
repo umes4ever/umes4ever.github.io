@@ -513,6 +513,23 @@ html {
   pointer-events: none;
 }
 
+/* Override section::before for hero section */
+#hero.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px) saturate(120%);
+  -webkit-backdrop-filter: blur(15px) saturate(120%);
+  border-radius: 0;
+  margin: 0;
+  z-index: -1;
+  box-shadow: none;
+}
+
 #hero .container {
   position: relative;
   z-index: 2;
@@ -623,6 +640,7 @@ section {
   position: relative;
 }
 
+/* Default section::before for all sections except hero */
 section::before {
   content: '';
   position: absolute;
@@ -631,12 +649,19 @@ section::before {
   right: 0;
   bottom: 0;
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-radius: 30px;
-  margin: 20px;
+  margin: 20px 35px 0 0;
   z-index: -1;
-  box-shadow: var(--glass-shadow);
+  box-shadow: 0 8px 32px rgba(41, 151, 255, 0.10);
+}
+
+/* Specific section::before for hero section only */
+#hero::before {
+  margin: 0;
+  background: var(--glass-bg);
+  border-radius: 0;
 }
 
 .section-title {
