@@ -1094,6 +1094,20 @@ section::before {
   }
 }
 
+@media (max-width: 992px) {
+  section::before {
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  .about .col-lg-4 {
+    display: flex;
+    justify-content: center;
+  }
+  .about .col-lg-4 img {
+    margin: 0 auto;
+  }
+}
+
 /*--------------------------------------------------------------
 # Enhanced Liquid Glass Effects
 --------------------------------------------------------------*/
@@ -1301,7 +1315,6 @@ body.dark-theme .back-to-top,
 body.dark-theme #footer .social-links a,
 body.dark-theme #footer,
 body.dark-theme section::before {
-  background: rgba(0, 0, 0, 0.8) !important;
   backdrop-filter: blur(32px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
