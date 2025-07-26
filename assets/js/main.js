@@ -651,15 +651,26 @@
 
 })();
 
-// Theme toggle logic
+// Enhanced Theme toggle logic with system preference detection
 (function() {
   const themeToggle = document.getElementById('theme-toggle');
   const themeIcon = document.getElementById('theme-toggle-icon');
   const body = document.body;
   const THEME_KEY = 'umes4ever-theme';
 
-  function setTheme(dark) {
-    if (dark) {
+  // Function to detect system theme preference
+  function getSystemTheme() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    return 'light';
+  }
+
+  // Function to apply theme
+  function setTheme(theme) {
+    const isDark = theme === 'dark';
+    
+    if (isDark) {
       body.classList.add('dark-theme');
       if (themeIcon) {
         themeIcon.classList.remove('bi-sun');
@@ -674,19 +685,82 @@
     }
   }
 
-  // Load theme from localStorage
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme === 'dark') {
-    setTheme(true);
-  } else {
-    setTheme(false);
+  // Function to get current theme preference
+  function getCurrentTheme() {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    
+    // If user has explicitly set a preference, use it
+    if (savedTheme && savedTheme !== 'system') {
+      return savedTheme;
+    }
+    
+    // Otherwise, use system preference
+    return getSystemTheme();
   }
 
+  // Initialize theme based on preference
+  function initializeTheme() {
+    const currentTheme = getCurrentTheme();
+    setTheme(currentTheme);
+  }
+
+  // Listen for system theme changes
+  if (window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleSystemChange = (e) => {
+      const savedTheme = localStorage.getItem(THEME_KEY);
+      // Only auto-switch if user hasn't set an explicit preference
+      if (!savedTheme || savedTheme === 'system') {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+    
+    // Modern browsers
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemChange);
+    } 
+    // Fallback for older browsers
+    else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleSystemChange);
+    }
+  }
+
+  // Initialize theme on page load
+  initializeTheme();
+
+  // Single theme toggle click handler with triple-click detection
   if (themeToggle) {
+    let clickCount = 0;
+    let clickTimer = null;
+
     themeToggle.addEventListener('click', function() {
-      const isDark = body.classList.toggle('dark-theme');
-      setTheme(isDark);
-      localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+      clickCount++;
+      
+      if (clickCount === 1) {
+        // Single click - toggle theme
+        const currentTheme = getCurrentTheme();
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        setTheme(newTheme);
+        localStorage.setItem(THEME_KEY, newTheme);
+        
+        // Set timer to reset click count
+        clickTimer = setTimeout(() => {
+          clickCount = 0;
+        }, 500);
+      } else if (clickCount === 3) {
+        // Triple click - reset to system preference
+        clearTimeout(clickTimer);
+        clickCount = 0;
+        
+        localStorage.setItem(THEME_KEY, 'system');
+        const systemTheme = getSystemTheme();
+        setTheme(systemTheme);
+        
+        // Optional: Show a brief notification
+        console.log('Theme reset to system preference:', systemTheme);
+      }
     });
   }
 })();
