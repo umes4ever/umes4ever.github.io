@@ -1598,3 +1598,33 @@ body.dark-theme #header::before {
     /* max-width: 60%; */
   }
 }
+
+.about,
+.about .container {
+  overflow: visible !important;
+}
+
+.about .content {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 32px;
+  transition: all 0.3s ease;
+}
+
+.about .content:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.portfolio,
+.portfolio .container {
+  overflow: visible !important;
+}
+
+.portfolio .portfolio-item {
+  transition: all 0.3s ease;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 32px;
+}
+
+.portfolio .portfolio-item:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
