@@ -205,7 +205,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (min-width: 992px) {
   #main {
-    margin-left: 140px;
+    margin-left: 75px;
   }
 }
 
@@ -640,9 +640,44 @@ section {
   position: relative;
 }
 
+/* Improved container with proper containment */
+.container {
+  max-width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+/* Responsive container max-widths */
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
 /* Default section::before for all sections except hero */
 section::before {
-  content: '';
+  /* content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -652,9 +687,9 @@ section::before {
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-radius: 30px;
-  margin: 20px 35px 0 0;
-  z-index: -1;
-  /* box-shadow: 0 8px 32px rgba(41, 151, 255, 0.10); */
+  margin: 0;
+  z-index: -1; */
+  display: none !important;
 }
 
 /* Specific section::before for hero section only */
@@ -719,12 +754,14 @@ section::before {
   padding: 8px 0;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .about .content ul strong {
   margin-right: 10px;
   color: var(--primary-color);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .about .content ul i {
@@ -750,6 +787,8 @@ section::before {
   opacity: 1;
   transform: translateY(0);
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .about .content.aos-animate {
@@ -761,6 +800,8 @@ section::before {
   border-radius: 20px;
   box-shadow: var(--glass-shadow);
   transition: var(--transition-smooth);
+  max-width: 100%;
+  height: auto;
 }
 
 .about img:hover {
@@ -789,6 +830,8 @@ section::before {
   padding: 30px;
   margin-bottom: 30px;
   transition: var(--transition-smooth);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .resume .resume-item:hover {
@@ -801,6 +844,8 @@ section::before {
   font-weight: 600;
   margin-bottom: 10px;
   color: var(--text-primary);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .resume .resume-item h5 {
@@ -821,6 +866,8 @@ section::before {
   padding-bottom: 8px;
   color: var(--text-secondary);
   line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .resume .resume-item:last-child {
@@ -901,6 +948,8 @@ section::before {
   box-shadow: 0 8px 32px rgba(41, 151, 255, 0.10);
   margin-bottom: 30px;
   transition: var(--transition-smooth);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .portfolio .portfolio-item:hover {
@@ -913,6 +962,8 @@ section::before {
   font-weight: 600;
   margin-bottom: 10px;
   color: var(--text-primary);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .portfolio .portfolio-item h5 {
@@ -933,6 +984,8 @@ section::before {
   padding-bottom: 8px;
   color: var(--text-secondary);
   line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .portfolio .portfolio-item:last-child {
@@ -969,6 +1022,7 @@ section::before {
   color: var(--text-secondary);
   font-size: 14px;
   text-align: center;
+  margin-top: 0;
 }
 
 #footer h3 {
@@ -1055,8 +1109,71 @@ section::before {
 }
 
 /*--------------------------------------------------------------
-# Responsive Design
+# Responsive Design Improvements
 --------------------------------------------------------------*/
+
+/* Remove gap between portfolio section and footer on smaller screens */
+@media (max-width: 992px) {
+  #portfolio {
+    margin-bottom: 0;
+    padding-bottom: 40px;
+  }
+  
+  section::before {
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  
+  .about .col-lg-4 {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .about .col-lg-4 img {
+    margin: 0 auto;
+  }
+  
+  /* Ensure proper container containment */
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  /* Fix content overflow on mobile */
+  .resume .resume-item,
+  .portfolio .portfolio-item,
+  .about .content {
+    padding: 20px;
+    margin-left: 0;
+    margin-right: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Ensure text doesn't overflow container */
+  .resume .resume-item h4,
+  .portfolio .portfolio-item h4,
+  .about .content h3 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Fix mobile navigation width */
+  #header {
+    width: 280px !important;
+    left: -280px;
+  }
+  
+  .mobile-nav-active #header {
+    left: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .section-title h2 {
     font-size: 2rem;
@@ -1073,6 +1190,26 @@ section::before {
   
   #hero p {
     font-size: 1.1rem;
+  }
+  
+  /* Further reduce gap on smaller screens */
+  #portfolio {
+    margin-bottom: 0;
+    padding-bottom: 20px;
+  }
+  
+  /* Tighter container padding */
+  .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  /* Ensure proper text wrapping */
+  .resume .resume-item ul li,
+  .portfolio .portfolio-item ul li {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 }
 
@@ -1092,19 +1229,38 @@ section::before {
   #hero p {
     font-size: 1rem;
   }
+  
+  /* Minimal gap for smallest screens */
+  #portfolio {
+    margin-bottom: 0;
+    padding-bottom: 10px;
+  }
+  
+  /* Tighter spacing for very small screens */
+  .resume .resume-item,
+  .portfolio .portfolio-item,
+  .about .content {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  /* Reduce container padding further */
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  /* Smaller mobile navigation */
+  #header {
+    width: 260px !important;
+    left: -260px;
+  }
 }
 
-@media (max-width: 992px) {
-  section::before {
-    margin: 0 !important;
-    border-radius: 0 !important;
-  }
-  .about .col-lg-4 {
-    display: flex;
-    justify-content: center;
-  }
-  .about .col-lg-4 img {
-    margin: 0 auto;
+/* Fix for very wide screens */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px;
   }
 }
 
@@ -1259,7 +1415,7 @@ section::before {
   
   /* Fix mobile navigation width */
   #header {
-    width: 320px !important;
+    /* width: 320px !important; */
   }
 }
 
@@ -1339,19 +1495,7 @@ body.dark-theme #header::before {
   content: '';
 }
 
-/* Remove any remaining dark backgrounds */
-
-/* Add gap between project experience section and footer */
-#portfolio {
-  margin-bottom: 60px;
-}
-
-@media (max-width: 768px) {
-  #portfolio {
-    margin-bottom: 40px;
-  }
-}
-
+/* Theme toggle and back to top buttons */
 .theme-toggle-btn, .back-to-top {
   position: fixed;
   right: 20px;
@@ -1399,4 +1543,52 @@ body.dark-theme #header::before {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Text overflow and wrapping improvements */
+.resume .resume-item h4,
+.portfolio .portfolio-item h4,
+.about .content h3,
+.resume .resume-item ul li,
+.portfolio .portfolio-item ul li,
+.about .content p {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Ensure proper flex behavior for responsive columns */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.col-lg-4, .col-lg-6, .col-lg-8 {
+  position: relative;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+@media (min-width: 992px) {
+  .col-lg-4 {
+    flex: 0 0 auto;
+    width: 33.333333%;
+    /* max-width: 30%; */
+  }
+
+  .col-lg-6 {
+    flex: 0 0 auto;
+    width: 50%;
+    /* max-width: 50%; */
+  }
+
+  .col-lg-8 {
+    flex: 0 0 auto;
+    width: 66.666667%;
+    /* max-width: 60%; */
+  }
 }
