@@ -99,8 +99,15 @@
    */
   on('click', '.mobile-nav-toggle', function (e) {
     select('body').classList.toggle('mobile-nav-active')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
+    const icon = this.querySelector('i')
+    if (icon) {
+      icon.classList.toggle('bi-list')
+      icon.classList.toggle('bi-x')
+    }
+    this.setAttribute(
+      'aria-expanded',
+      select('body').classList.contains('mobile-nav-active')
+    )
   })
 
   /**
@@ -113,8 +120,14 @@
       if (body.classList.contains('mobile-nav-active')) {
         body.classList.remove('mobile-nav-active')
         let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
+        const icon = navbarToggle ? navbarToggle.querySelector('i') : null
+        if (icon) {
+          icon.classList.remove('bi-x')
+          icon.classList.add('bi-list')
+        }
+        if (navbarToggle) {
+          navbarToggle.setAttribute('aria-expanded', 'false')
+        }
       }
       scrollto(this.hash)
     }
@@ -504,37 +517,147 @@
     });
   }
 
-  // Add floating particles effect to hero section
-  const createParticles = () => {
-    const hero = select('#hero');
-    if (!hero) return;
+  // Generative Canvas Particle Constellation Background for Hero
+  const initHeroCanvas = () => {
+    const canvas = document.getElementById('hero-canvas');
+    if (!canvas) return;
 
-    // Clear existing particles to prevent duplicates
-    const existingParticles = hero.querySelectorAll('.floating-particle');
-    existingParticles.forEach(particle => particle.remove());
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+    let width = canvas.width = canvas.offsetWidth;
+    let height = canvas.height = canvas.offsetHeight;
 
-    for (let i = 0; i < 30; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'floating-particle';
-      particle.style.cssText = `
-        position: absolute;
-        width: 3px;
-        height: 3px;
-        background: rgba(0, 122, 255, 0.2);
-        border-radius: 50%;
-        pointer-events: none;
-        animation: float ${3 + Math.random() * 4}s ease-in-out infinite;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        animation-delay: ${Math.random() * 2}s;
-        z-index: 1;
-      `;
-      hero.appendChild(particle);
+    const particles = [];
+    const maxParticles = window.innerWidth < 768 ? 35 : 75;
+    const maxDistance = 120;
+    const mouse = { x: null, y: null, radius: 150 };
+
+    // Resize handler
+    const resizeCanvas = () => {
+      if (!canvas) return;
+      width = canvas.width = canvas.offsetWidth;
+      height = canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener('resize', resizeCanvas);
+
+    // Mouse movement
+    const heroSection = document.getElementById('hero');
+    if (heroSection) {
+      heroSection.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      });
+      heroSection.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+      });
     }
+
+    // Particle template
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.7;
+        this.vy = (Math.random() - 0.5) * 0.7;
+        this.radius = Math.random() * 2 + 1;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Bounce borders
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        // Mouse interaction (gentle attraction)
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < mouse.radius) {
+            const force = (mouse.radius - distance) / mouse.radius;
+            this.x += (dx / distance) * force * 0.3;
+            this.y += (dy / distance) * force * 0.3;
+          }
+        }
+      }
+
+      draw() {
+        const isDark = document.body.classList.contains('dark-theme');
+        ctx.fillStyle = isDark ? 'rgba(41, 151, 255, 0.45)' : 'rgba(0, 122, 255, 0.25)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Generate particles
+    for (let i = 0; i < maxParticles; i++) {
+      particles.push(new Particle());
+    }
+
+    // Loop
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Render & connect particles
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance < maxDistance) {
+            const isDark = document.body.classList.contains('dark-theme');
+            const alpha = (1 - distance / maxDistance) * (isDark ? 0.15 : 0.12);
+            ctx.strokeStyle = isDark ? `rgba(175, 82, 222, ${alpha})` : `rgba(0, 122, 255, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+
+        // Connect to mouse
+        if (mouse.x !== null && mouse.y !== null) {
+          const dx = particles[i].x - mouse.x;
+          const dy = particles[i].y - mouse.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < mouse.radius) {
+            const alpha = (1 - distance / mouse.radius) * 0.18;
+            ctx.strokeStyle = document.body.classList.contains('dark-theme') 
+              ? `rgba(255, 55, 95, ${alpha})` 
+              : `rgba(88, 86, 214, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    // Attach reference to cleanup later
+    window._canvasCleanup = () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
   };
 
-  // Initialize particles on load
-  window.addEventListener('load', createParticles);
+  // Initialize canvas on load
+  window.addEventListener('load', initHeroCanvas);
 
   // Enhanced mobile navigation with backdrop blur
   const mobileNavToggle = select('.mobile-nav-toggle');
@@ -744,6 +867,7 @@
         
         setTheme(newTheme);
         localStorage.setItem(THEME_KEY, newTheme);
+        this.blur();
         
         // Set timer to reset click count
         clickTimer = setTimeout(() => {
@@ -757,6 +881,7 @@
         localStorage.setItem(THEME_KEY, 'system');
         const systemTheme = getSystemTheme();
         setTheme(systemTheme);
+        this.blur();
         
         // Optional: Show a brief notification
         console.log('Theme reset to system preference:', systemTheme);
