@@ -259,35 +259,44 @@
   /**
    * Initiate portfolio lightbox 
    */
-  const portfolioLightbox = GLightbox({
-    selector: '.portfolio-lightbox'
-  });
+  if (typeof GLightbox !== 'undefined') {
+    try {
+      const portfolioLightbox = GLightbox({
+        selector: '.portfolio-lightbox'
+      });
 
-  /**
-   * Initiate portfolio details lightbox 
-   */
-  const portfolioDetailsLightbox = GLightbox({
-    selector: '.portfolio-details-lightbox',
-    width: '90%',
-    height: '90vh'
-  });
+      const portfolioDetailsLightbox = GLightbox({
+        selector: '.portfolio-details-lightbox',
+        width: '90%',
+        height: '90vh'
+      });
+    } catch (error) {
+      console.warn('GLightbox failed to initialize:', error);
+    }
+  }
 
   /**
    * Portfolio details slider
    */
-  new Swiper('.portfolio-details-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
+  if (typeof Swiper !== 'undefined' && document.querySelector('.portfolio-details-slider')) {
+    try {
+      new Swiper('.portfolio-details-slider', {
+        speed: 400,
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          type: 'bullets',
+          clickable: true
+        }
+      });
+    } catch (error) {
+      console.warn('Swiper failed to initialize:', error);
     }
-  });
+  }
 
   /**
    * Animation on scroll
@@ -370,64 +379,59 @@
     window.addEventListener('resize', updateParallax); // Reset on resize
   }
 
-  // Smooth reveal animations for sections
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
+  // Enhanced dynamic spotlight and 3D tilt for iOS 26 Glass Cards
+  const glassCards = select('.bento-card, .portfolio-item, .resume-item, .resume-download-btn', true);
 
-  let sectionObserver;
+  glassCards.forEach(card => {
+    if (!card) return;
+    const isBentoCard = card.classList.contains('bento-card');
+    const isDownloadBtn = card.classList.contains('resume-download-btn');
 
-  try {
-    sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }
-      });
-    }, observerOptions);
-  } catch (error) {
-    console.warn('IntersectionObserver not supported:', error);
-    sectionObserver = null;
-  }
-
-  // Observe all sections for smooth reveal
-  if (sectionObserver) {
-    const sections = select('section', true);
-    sections.forEach(section => {
-      // Skip hero section as it has its own animations
-      if (section.id === 'hero') return;
-
-      section.style.opacity = '0';
-      section.style.transform = 'translateY(30px)';
-      section.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-      sectionObserver.observe(section);
-    });
-  } else {
-    // Fallback: show all sections immediately
-    const sections = select('section', true);
-    sections.forEach(section => {
-      if (section.id === 'hero') return;
-      section.style.opacity = '1';
-      section.style.transform = 'translateY(0)';
-    });
-  }
-
-  // Enhanced hover effects for cards
-  const cards = select('.resume-item, .portfolio-item, .about .content', true);
-  cards.forEach(card => {
-    if (card) {
-      card.addEventListener('mouseenter', function () {
-        this.style.transform = 'translateY(-8px) scale(1.02)';
-        this.style.boxShadow = '0 20px 50px rgba(0, 0, 0, 0.15)';
-      });
-
-      card.addEventListener('mouseleave', function () {
-        this.style.transform = 'translateY(0) scale(1)';
-        this.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.1)';
-      });
+    // Spotlight only on bento cards.
+    if (isBentoCard && !card.querySelector('.glass-spotlight')) {
+      const spotlight = document.createElement('div');
+      spotlight.className = 'glass-spotlight';
+      card.appendChild(spotlight);
     }
+    if (!isBentoCard) {
+      card.querySelectorAll('.glass-spotlight').forEach((spotlight) => spotlight.remove());
+    }
+
+    card.addEventListener('mousemove', function (e) {
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (isBentoCard) {
+        this.style.setProperty('--mouse-x', `${x}px`);
+        this.style.setProperty('--mouse-y', `${y}px`);
+      }
+
+      const cardWidth = rect.width;
+      const cardHeight = rect.height;
+      const centerX = cardWidth / 2;
+      const centerY = cardHeight / 2;
+      const tilt = isDownloadBtn ? 6 : 4;
+      const rotateX = ((y - centerY) / centerY) * -tilt;
+      const rotateY = ((x - centerX) / centerX) * tilt;
+
+      if (isDownloadBtn) {
+        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px) scale(1.03)`;
+        this.style.boxShadow = document.body.classList.contains('dark-theme')
+          ? '0 20px 35px rgba(124, 58, 237, 0.55), 0 6px 18px rgba(219, 39, 119, 0.3)'
+          : '0 20px 35px rgba(37, 99, 235, 0.35)';
+      } else {
+        this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.015)`;
+        this.style.boxShadow = document.body.classList.contains('dark-theme')
+          ? '0 30px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.15)'
+          : '0 25px 60px rgba(10, 10, 20, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.5)';
+      }
+    });
+
+    card.addEventListener('mouseleave', function () {
+      this.style.transform = '';
+      this.style.boxShadow = '';
+    });
   });
 
   // Smooth cursor following effect for social links
@@ -445,36 +449,23 @@
     }
   });
 
-  // Enhanced typing animation with cursor blink
-  const typedElement = select('.typed');
-  if (typedElement) {
-    // Remove existing cursor if any
-    const existingCursor = typedElement.parentNode.querySelector('.typed-cursor');
-    if (existingCursor) {
-      existingCursor.remove();
-    }
-
-    const cursor = document.createElement('span');
-    cursor.className = 'typed-cursor';
-    cursor.innerHTML = '|';
-    cursor.style.color = 'var(--primary-color)';
-    cursor.style.animation = 'blink 1s infinite';
-    typedElement.parentNode.appendChild(cursor);
-  }
-
-  // Add CSS for cursor blink animation
+  // Style the Typed.js cursor via CSS injection (do not create a manual cursor element
+  // as Typed.js manages .typed-cursor itself and re-inserts it after each string)
   if (!document.querySelector('#typed-cursor-styles')) {
     const style = document.createElement('style');
     style.id = 'typed-cursor-styles';
     style.textContent = `
-      @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
-      }
-      
       .typed-cursor {
+        color: var(--primary-color);
         font-weight: 300;
         font-size: 1.5rem;
+        opacity: 1;
+        animation: typed-blink 0.7s infinite;
+      }
+
+      @keyframes typed-blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
       }
     `;
     document.head.appendChild(style);
@@ -524,6 +515,7 @@
 
     const ctx = canvas.getContext('2d');
     let animationFrameId;
+    let isVisible = true; // track hero visibility to pause when off-screen
     let width = canvas.width = canvas.offsetWidth;
     let height = canvas.height = canvas.offsetHeight;
 
@@ -552,6 +544,21 @@
         mouse.x = null;
         mouse.y = null;
       });
+
+      // Pause canvas animation when hero scrolls out of view
+      try {
+        const heroVisibilityObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            isVisible = entry.isIntersecting;
+            if (isVisible && !animationFrameId) {
+              animate(); // resume
+            }
+          });
+        }, { threshold: 0 });
+        heroVisibilityObserver.observe(heroSection);
+      } catch (e) {
+        // IntersectionObserver not supported — always animate
+      }
     }
 
     // Particle template
@@ -599,8 +606,13 @@
       particles.push(new Particle());
     }
 
-    // Loop
+    // Loop — pauses automatically when hero is off-screen
     const animate = () => {
+      if (!isVisible) {
+        animationFrameId = null;
+        return; // stop scheduling frames; heroVisibilityObserver will resume
+      }
+
       ctx.clearRect(0, 0, width, height);
 
       // Render & connect particles
@@ -706,66 +718,26 @@
     }
   });
 
-  // Enhanced section transitions with stagger effect
-  const staggerElements = (elements, delay = 100) => {
-    elements.forEach((el, index) => {
-      setTimeout(() => {
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-      }, index * delay);
-    });
+  // Track all timeout IDs for safe cleanup
+  const _timeoutIds = [];
+  const _safeTimeout = (fn, delay) => {
+    const id = setTimeout(fn, delay);
+    _timeoutIds.push(id);
+    return id;
   };
 
-  // Apply stagger effect to resume and portfolio items
-  if (sectionObserver) {
-    const resumeSection = select('#resume');
-    const portfolioSection = select('#portfolio');
-
-    if (resumeSection) {
-      const resumeObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const items = entry.target.querySelectorAll('.resume-item');
-            if (items.length > 0) {
-              staggerElements(items, 150);
-            }
-            resumeObserver.unobserve(entry.target);
-          }
-        });
-      }, observerOptions);
-
-      resumeObserver.observe(resumeSection);
-    }
-
-    if (portfolioSection) {
-      const portfolioObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const items = entry.target.querySelectorAll('.portfolio-item');
-            if (items.length > 0) {
-              staggerElements(items, 150);
-            }
-            portfolioObserver.unobserve(entry.target);
-          }
-        });
-      }, observerOptions);
-
-      portfolioObserver.observe(portfolioSection);
-    }
-  }
+  // Resume/portfolio item staggering removed. AOS already handles reveal animations,
+  // and inline per-item opacity styles can persist across theme toggles/scroll paths.
 
   // Cleanup function to prevent memory leaks
   const cleanup = () => {
-    // Remove event listeners and observers when page unloads
-    if (sectionObserver) {
-      sectionObserver.disconnect();
+    // Cancel canvas animation loop
+    if (typeof window._canvasCleanup === 'function') {
+      window._canvasCleanup();
     }
-
-    // Clear any intervals or timeouts
-    const highestTimeoutId = setTimeout(";");
-    for (let i = 0; i < highestTimeoutId; i++) {
-      clearTimeout(i);
-    }
+    // Clear only timeouts tracked by this script
+    _timeoutIds.forEach(id => clearTimeout(id));
+    _timeoutIds.length = 0;
   };
 
   // Add cleanup on page unload
@@ -780,6 +752,24 @@
   const themeIcon = document.getElementById('theme-toggle-icon');
   const body = document.body;
   const THEME_KEY = 'umes4ever-theme';
+
+  function refreshThemeSensitiveSections() {
+    document.querySelectorAll('.bento-card, .resume-item, .portfolio-item').forEach((card) => {
+      card.style.transform = '';
+      card.style.boxShadow = '';
+      card.style.opacity = '';
+    });
+
+    document.querySelectorAll('section:not(#hero)').forEach((section) => {
+      section.style.opacity = '';
+      section.style.transform = '';
+      section.style.transition = '';
+    });
+
+    if (typeof AOS !== 'undefined' && typeof AOS.refresh === 'function') {
+      AOS.refresh();
+    }
+  }
 
   // Function to detect system theme preference
   function getSystemTheme() {
@@ -806,6 +796,8 @@
         themeIcon.classList.add('bi-sun');
       }
     }
+
+    refreshThemeSensitiveSections();
   }
 
   // Function to get current theme preference
