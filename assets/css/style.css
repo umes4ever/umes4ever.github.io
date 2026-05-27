@@ -393,7 +393,7 @@ body:not(.dark-theme) .nav-menu a:not(.active) {
   font-size: 18px;
   transition: var(--transition-smooth);
   color: var(--text-secondary);
-  /* solid color — no clip trick — ensures icon is always visible */
+  /* solid color - no clip trick - ensures icon is always visible */
   background: none;
   -webkit-text-fill-color: currentColor;
 }
@@ -439,7 +439,7 @@ body:not(.dark-theme) .nav-menu a:not(.active) {
   color: var(--primary-color);
 }
 
-/* Active/current section — solid blue pill */
+/* Active/current section - solid blue pill */
 .nav-menu .active {
   background: var(--primary-color) !important;
   border-color: var(--primary-color) !important;
