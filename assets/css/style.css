@@ -735,22 +735,19 @@ body.dark-theme .nav-menu .active {
   z-index: 10;
 }
 
-#hero .social-links a {
-  font-size: 24px;
+#hero .social-links a,
+#footer .social-links a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: var(--text-secondary);
   line-height: 1;
-  margin: 0 12px;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               background 0.35s ease,
               border-color 0.35s ease,
               backdrop-filter 0.35s ease,
               color 0.2s ease;
-  width: 54px;
-  height: 54px;
   border-radius: 50%;
   overflow: hidden; /* keeps gradient cleanly clipped to circle */
   background: var(--glass-bg);
@@ -761,41 +758,62 @@ body.dark-theme .nav-menu .active {
   position: relative;
 }
 
+#hero .social-links a {
+  font-size: 24px;
+  width: 54px;
+  height: 54px;
+  margin: 0 12px;
+}
+
+#footer .social-links a {
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  margin: 0 6px;
+}
+
 /* Base hover — lift, scale, kill glass blur so gradient renders fully opaque */
-#hero .social-links a:hover {
+#hero .social-links a:hover,
+#footer .social-links a:hover {
   color: white !important;
   transform: translateY(-6px) scale(1.1);
   border-color: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  text-decoration: none;
 }
 
 /* Instagram — authentic diagonal gradient */
-#hero .social-links a.instagram:hover {
+#hero .social-links a.instagram:hover,
+#footer .social-links a.instagram:hover {
   background: linear-gradient(45deg, #f09433 0%, #e6683c 20%, #dc2743 45%, #cc2366 75%, #bc1888 100%);
   box-shadow: 0 12px 32px rgba(188, 24, 136, 0.45);
 }
 
 /* LinkedIn — brand blue */
-#hero .social-links a.linkedin:hover {
+#hero .social-links a.linkedin:hover,
+#footer .social-links a.linkedin:hover {
   background: linear-gradient(135deg, #0077b5 0%, #00a0dc 100%);
   box-shadow: 0 12px 32px rgba(0, 119, 181, 0.5);
 }
 
 /* YouTube — brand red */
-#hero .social-links a.youtube:hover {
+#hero .social-links a.youtube:hover,
+#footer .social-links a.youtube:hover {
   background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
   box-shadow: 0 12px 32px rgba(255, 0, 0, 0.4);
 }
 
 /* Medium — charcoal/dark */
-#hero .social-links a.medium:hover {
+#hero .social-links a.medium:hover,
+#footer .social-links a.medium:hover {
   background: linear-gradient(135deg, #242424 0%, #454545 100%);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
 /* Force icon white — override any -webkit-text-fill-color inheritance */
-#hero .social-links a:hover i {
+#hero .social-links a:hover i,
+#footer .social-links a:hover i {
   color: white !important;
   -webkit-text-fill-color: white !important;
 }
@@ -869,6 +887,13 @@ body.dark-theme .nav-menu .active {
     height: 48px;
     font-size: 20px;
     margin: 0 8px;
+  }
+
+  #footer .social-links a {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    margin: 0 5px;
   }
 }
 
@@ -992,6 +1017,12 @@ section::before {
   z-index: 1;
   opacity: 0;
   transition: opacity 0.4s ease;
+}
+
+/* Keep bento card content above the interactive spotlight overlay */
+.bento-card > *:not(.glass-spotlight) {
+  position: relative;
+  z-index: 2;
 }
 
 body.dark-theme .glass-spotlight {
@@ -1323,6 +1354,7 @@ body:not(.dark-theme) .bento-stats .stat-box {
   margin-bottom: 20px;
   transition: var(--transition-smooth);
   position: relative;
+  transform-style: preserve-3d;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
@@ -1409,22 +1441,21 @@ body:not(.dark-theme) .bento-stats .stat-box {
   font-weight: 700;
   font-family: 'Outfit', sans-serif;
   font-size: 1rem;
-  transition: var(--transition-smooth);
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
 }
 
 .resume-download-btn i {
   font-size: 1.1rem;
-  transition: var(--transition-smooth);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
 }
 
+/* 3D tilt on hover is applied via main.js (see glassCards handler) */
 .resume-download-btn:hover {
-  transform: translateY(-3px);
   box-shadow: 0 20px 35px rgba(37, 99, 235, 0.35);
-}
-
-.resume-download-btn:hover i {
-  transform: translateY(2px);
 }
 
 /* Dark theme dynamic glowing shadow for the download button */
@@ -1484,32 +1515,6 @@ body.dark-theme .resume .resume-item h5 {
 
 #footer .social-links {
   margin: 0 0 40px 0;
-}
-
-#footer .social-links a {
-  font-size: 18px;
-  display: inline-block;
-  background: var(--glass-bg);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  color: var(--text-secondary);
-  line-height: 1;
-  padding: 8px 0;
-  margin-right: 4px;
-  border-radius: 50%;
-  text-align: center;
-  width: 36px;
-  height: 36px;
-  transition: var(--transition-smooth);
-  border: 1px solid var(--glass-border);
-}
-
-#footer .social-links a:hover {
-  background: var(--primary-color);
-  color: white;
-  text-decoration: none;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
 }
 
 #footer .copyright {
@@ -1856,10 +1861,9 @@ body.dark-theme .resume .resume-item h5 {
 }
 
 /* Enhanced hover effects for better interactivity.
-   Note: .resume-item hover transform is intentionally excluded here
-   because main.js applies a richer 3D tilt via inline style on mousemove. */
+   Note: .resume-item and .resume-download-btn hover transforms are intentionally
+   excluded here because main.js applies a richer 3D tilt via inline style on mousemove. */
 .nav-menu a:hover,
-#hero .social-links a:hover,
 .portfolio .portfolio-item:hover,
 .about .content:hover {
   transform: translateY(-3px);
@@ -1904,17 +1908,20 @@ body.dark-theme .section-title p, body.dark-theme .about .content p, body.dark-t
 
 body.dark-theme .nav-menu a,
 body.dark-theme #hero .social-links a,
-body.dark-theme .resume .resume-item,
-body.dark-theme .portfolio .portfolio-item,
 body.dark-theme .about .content,
 body.dark-theme #header,
 body.dark-theme #footer .social-links a,
-body.dark-theme #footer,
-body.dark-theme section::before {
+body.dark-theme #footer {
   backdrop-filter: blur(32px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+}
+
+body.dark-theme .resume .resume-item,
+body.dark-theme .portfolio .portfolio-item {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 body.dark-theme #header {
   background: rgba(10, 10, 20, 0.75) !important;
@@ -2013,6 +2020,9 @@ body.dark-theme #header::before {
   border-radius: 24px;
   padding: 32px;
   margin-bottom: 24px;
+  position: relative;
+  transform-style: preserve-3d;
+  overflow: hidden;
 }
 
 .portfolio-item-header {
